@@ -108,9 +108,6 @@ axios(config)
   setPlaces(stripped);
   console.log(places, 'place')
 
-
-
-
   alert(JSON.stringify(stripped).replace('[', '').replace("{", "").replace('}', '').replace(']', ''));
 })
 .catch(function (error) {
@@ -118,6 +115,23 @@ axios(config)
 });
 
 }
+
+
+const list = () => {
+
+  console.log(places, 'plazzzzzz')
+  return places.map((element) => {
+    return (
+      <View key={element.id} style={{margin: 10}}>
+        <Text>{element.lat}</Text>
+        <Text>{element.long}</Text>
+      </View>
+    );
+  });
+};
+
+list();
+
 
 const clearData = () => {var axios = require('axios');
 
@@ -216,6 +230,8 @@ const goToTokyo = () => {
       <MapView ref={mapRef} style={{height: '60%', width: '100%'}} 
       showsUserLocation={true}
       region={region}><Marker coordinate={region} /></MapView> 
+
+      <View style={{backgroundColor:'white'}}>{list()}</View>
 
       <Text style={{color: 'white', fontSize: 16, marginTop: '2%'}}>{display}</Text>
 
