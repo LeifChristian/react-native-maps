@@ -1,11 +1,25 @@
 {
   "expo": {
+
     "name": "pd-test",
     "slug": "pd-test",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
-  },
-  "name": "pd-test"
+    ],
+      "android": {
+          "package": "com.company",
+          "config": {
+              "googleMaps": {
+                  "apiKey": "AIzaSyDgf-kFLAr50LunR7vDOwvWG6ZgDc9OQHQ"
+              }
+          }
+      },
+      "ios": {
+          "bundleIdentifier": "com.company",
+          "config": {
+              "googleMapsApiKey": "AIzaSyDgf-kFLAr50LunR7vDOwvWG6ZgDc9OQHQ"
+          }
+      }
+  }
 }
