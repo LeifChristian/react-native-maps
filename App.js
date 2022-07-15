@@ -3,7 +3,7 @@ import {React, useState, useEffect, useRef} from 'react';
 import Geocoder from 'react-native-geocoding';
 import MapView from'react-native-maps';
 import { Marker } from "react-native-maps";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Appearance } from 'react-native';
 import * as Location from 'expo-location';
 
 import axios from 'axios';
@@ -116,22 +116,21 @@ axios(config)
 
 }
 
-
 const list = () => {
 
-  console.log(places, 'plazzzzzz')
+
+  // console.log(places, 'plazzzzzz')
   return places.map((element) => {
     return (
-      <View key={element.id} style={{margin: 10}}>
-        <Text>{element.lat}</Text>
-        <Text>{element.long}</Text>
-      </View>
+      
+        <Marker key={element.id} coordinate={{"latitude": element.lat,
+    "latitudeDelta": latD,
+    "longitude": element.long,
+    "longitudeDelta": longD}} />
+
     );
   });
 };
-
-list();
-
 
 const clearData = () => {var axios = require('axios');
 
@@ -227,11 +226,11 @@ const goToTokyo = () => {
       {/* <Text>Open up App.js to start working on your app!fff</Text>
       <StatusBar style="auto" /> */}
       
-      <MapView ref={mapRef} style={{height: '60%', width: '100%'}} 
-      showsUserLocation={true}
-      region={region}><Marker coordinate={region} /></MapView> 
+      <MapView userInterfaceStyle={'dark'} ref={mapRef} style={{height: '60%', width: '100%'}} 
+       showsUserLocation={true} //showsMyLocationButton
+      region={region}><Marker coordinate={region} />{list()}</MapView> 
 
-      <View style={{backgroundColor:'white'}}>{list()}</View>
+      <View style={{backgroundColor:'white'}}></View>
 
       <Text style={{color: 'white', fontSize: 16, marginTop: '2%'}}>{display}</Text>
 
@@ -293,14 +292,15 @@ const goToTokyo = () => {
         style={styles.button}
         onPressIn={()=> {goToData()}}
       >
-        <Text style={styles.buttonStyle}>Data</Text>
+        <Text style={styles.buttonStyle}>Add Place</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+
+      {/* <TouchableOpacity
         style={styles.button}
         onPressIn={()=> {clearData()}}
       >
         <Text style={styles.buttonStyle}>ClearData</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       </View>
 
       
