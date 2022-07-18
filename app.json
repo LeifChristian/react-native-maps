@@ -4,6 +4,8 @@
     "name": "pd-test",
     "slug": "pd-test",
     "version": "1.0.0",
+
+    "icon": "download.png",
     "assetBundlePatterns": [
       "**/*"
     ],

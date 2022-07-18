@@ -24,7 +24,10 @@
     "react-native-fetch-api": "^3.0.0",
     "react-native-geocoder": "^0.5.0",
     "react-native-geocoding": "^0.5.0",
+    "react-native-input-prompt": "^1.0.0",
     "react-native-maps": "0.30.2",
+    "react-native-modal": "^13.0.1",
+    "react-native-single-prompt": "^2.0.1",
     "react-native-web": "0.17.7",
     "realm": "^10.19.5"
   },

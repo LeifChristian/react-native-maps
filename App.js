@@ -3,8 +3,11 @@ import {React, useState, useEffect, useRef} from 'react';
 import Geocoder from 'react-native-geocoding';
 import MapView from'react-native-maps';
 import { Marker } from "react-native-maps";
-import { StyleSheet, Text, View, Button, TouchableOpacity, Appearance } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Appearance, Modal } from 'react-native';
 import * as Location from 'expo-location';
+import Modality from './modal';
+import Prompt from 'react-native-input-prompt'
+
 
 import axios from 'axios';
 
@@ -48,6 +51,11 @@ export default function App() {
 
   const [places, setPlaces] = useState([])
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [addPrompt, setaddPrompt] = useState(false)
+  const [inputText, setinputText] = useState('')
+
   let region = {
     "latitude": lat,
     "latitudeDelta": latD,
@@ -55,45 +63,92 @@ export default function App() {
     "longitudeDelta": longD,
   }
 
- useEffect(() => {
-  (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      return;
-    }
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+  
+      let location = await Location.getCurrentPositionAsync({});
+      
+      setLocation(location);
+      console.log(location, "CATION");
+  
+      Location.watchPositionAsync({
+        enableHighAccuracy:true
+            }, location => {
+             console.log(location.coords.latitude, 'current location');
+             locations.push({lat: location.coords.latitude, long: location.coords.longitude})
+             console.log(locations, 'lo')
+             setDisplay(`lat: ${location.coords.latitude}, long: ${location.coords.longitude}`)
+             setLat(location.coords.latitude);
+             setLong(location.coords.longitude)
+            });
+  
+            var data = JSON.stringify({
+              "password": "b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342",
+              
+            });
+            
+            var config = {
+              method: 'post',
+              url: 'http://54.183.11.135:3802/getPlaces?password=b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342',
+              headers: { 
+                'Content-Type': 'application/json'
+              },
+              data : data
+            };
+            
+            axios(config)
+            .then(function (response) {
+              console.log(JSON.stringify(response.data), 'res!!!!!!');
+            
+              // let obj = JSON.stringify(response.data);
+            
+              let washedResponse = JSON.parse(JSON.stringify(response.data));
+            
+              console.log(washedResponse)
+            
+              setPlaces(washedResponse);
+            
+              // alert(JSON.stringify(washedResponse).replace('[', '').replace("{", "").replace('}', '').replace(']', ''));
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+  
+            // const get = async () => {
+            //  await showMyLocation()
+            // }
+  
+            // get();
+  
+      
+    })();
+  }, []);
 
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-    console.log(location);
+const addPlace = (text) => {
 
-    Location.watchPositionAsync({
-      enableHighAccuracy:true
-          }, location => {
-           console.log(location.coords.latitude, 'current location');
-           locations.push({lat: location.coords.latitude, long: location.coords.longitude})
-           console.log(locations, 'lo')
-           setDisplay(`lat: ${location.coords.latitude.toString()}, long: ${location.coords.longitude}`)
-          });
-    
-  })();
-}, []);
+  setaddPrompt(true);
 
-
-const goToData = () => {var axios = require('axios');
 var data = JSON.stringify({
   "password": "b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342",
-  "coords": locations
+  "coords": locations,
+  "name": text
 });
 
 var config = {
   method: 'post',
-  url: 'http://54.183.11.135:3800/temp?password=b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342',
+  url: 'http://54.183.11.135:3802/addPlace?password=b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342',
   headers: { 
     'Content-Type': 'application/json'
   },
   data : data
 };
+
+
 
 axios(config)
 .then(function (response) {
@@ -101,18 +156,118 @@ axios(config)
 
   let obj = JSON.stringify(response.data);
 
-  let stripped = JSON.parse(obj);
+  let washedResponse = JSON.parse(obj);
 
-  console.log(stripped)
+  console.log(washedResponse)
 
-  setPlaces(stripped);
-  console.log(places, 'place')
+  setPlaces(washedResponse);
+  console.log(places, 'places')
 
-  alert(JSON.stringify(stripped).replace('[', '').replace("{", "").replace('}', '').replace(']', ''));
+  console.log(washedResponse[washedResponse.length-1], 'washedResponse')
+
+  // alert(JSON.stringify(washedResponse).replace('[', '').replace("{", "").replace('}', '').replace(']', ''));
+
 })
 .catch(function (error) {
   console.log(error);
 });
+
+
+}
+
+
+const deletePlace = (id, lat) => {
+
+  alert(` Delete:  ${id} | Lat: ${lat}`)
+
+  setModalVisible(false)
+
+  var config = {
+    method: 'delete',
+    url: `http://54.183.11.135:3802/deletePlace?password=b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342&id=${id}`,
+    headers: { }
+  };
+  
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+  
+
+  var data = JSON.stringify({
+    "password": "b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342",
+    
+  });
+  
+  var config = {
+    method: 'post',
+    url: 'http://54.183.11.135:3802/getPlaces?password=b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342',
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    data : data
+  };
+  
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data), 'res!!!!!!');
+  
+    // let obj = JSON.stringify(response.data);
+  
+    let washedResponse = JSON.parse(JSON.stringify(response.data));
+  
+    console.log(washedResponse)
+  
+    setPlaces(washedResponse);
+  
+    // alert(JSON.stringify(washedResponse).replace('[', '').replace("{", "").replace('}', '').replace(']', ''));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+  // alert(JSON.stringify(washedResponse).replace('[', '').replace("{", "").replace('}', '').replace(']', ''));
+
+} 
+
+
+const showPlaces = () => {
+
+
+  return places.map((element) => {
+
+    const gotoPlace = (lat, long) => {
+
+      mapRef.current.animateToRegion({latitude: lat, longitude: long, latitudeDelta: 0.01,
+        longitudeDelta: 0.01,}, 3 * 1000);
+       setLat(lat); setLong(long)
+        //  setLocation(region)
+
+        // setModalVisible(false)
+
+    }
+    return (
+
+      // 
+ <>
+    <TouchableOpacity key={element.id} onPress ={()=>{gotoPlace(element.lat, element.long)}}>
+      <Text key={element.id}>
+        
+        lat: {' '}{element.lat} long: {' '}{element.long}
+        
+    </Text><Button title="delete" onPress={() => {deletePlace(element.id, element.lat)}}></Button></TouchableOpacity>
+    </>
+      
+    //     <Text key={element.id} coordinate={{"latitude": element.lat,
+    // "latitudeDelta": latD,
+    // "longitude": element.long,
+    // "longitudeDelta": longD}} />
+
+    );
+  });
 
 }
 
@@ -157,9 +312,9 @@ try {
   
     let obj = JSON.stringify(response.data);
   
-    let stripped = JSON.parse(obj);
+    let washedResponse = JSON.parse(obj);
   
-    console.log(stripped)
+    console.log(washedResponse)
   
   })
   .catch(function (error) {
@@ -211,6 +366,8 @@ const setToPlace = () => {
   setLong(-77.036560);
 }
 
+
+
 const goToTokyo = () => {
   //Animate the user to new region. Complete this animation in 3 seconds
   
@@ -234,49 +391,84 @@ const goToTokyo = () => {
 
       <Text style={{color: 'white', fontSize: 16, marginTop: '2%'}}>{display}</Text>
 
+      <Prompt
+    visible={addPrompt}
+    title="Name your place"
+    placeholder="Type Something"
+    onCancel={() =>
+       setaddPrompt(false)
+        
+    }
+    onSubmit={text =>{
+       alert(text);
+       setinputText(text)
+      addPlace(text)
+      setaddPrompt(false)
+      }
+    }
+/>
+
       <Text style={{display: 'none'}} ><Button title={'White House'} onPressIn={()=> {setToPlace()}}> </Button> </Text>
 
-      <View style={[styles.group, styles.top]}><TouchableOpacity
-        style={styles.button} onPressIn={()=> {move('up')}}
-      >
-        <Text style={styles.buttonStyle}>UP</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity
-        style={styles.button}
-        onPressIn={()=> {move('down')}}
-      >
-        <Text style={styles.buttonStyle}>DOWN</Text>
-      </TouchableOpacity></View>
-      <View style={styles.group}><TouchableOpacity
-        style={styles.button}
-        onPressIn={()=> {move('left')}}
-      >
-        <Text style={styles.buttonStyle}>LEFT</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity
-        style={styles.button}
-        onPressIn={()=> {move('right')}}
-      >
-        <Text style={styles.buttonStyle}>RIGHT</Text>
-      </TouchableOpacity></View><View style={styles.group}><TouchableOpacity
-        style={styles.button}
-        onPressIn={()=> {move('plus')}}
-      >
-        <Text style={styles.buttonStyleLarge}>+</Text>
-      </TouchableOpacity>
-      
+      <View style={[styles.group, styles.top]}>
       <TouchableOpacity
         style={styles.button}
         onPressIn={()=> {move('minus')}}
       >
-        <Text style={styles.buttonStyleLarge}>--</Text>
-      </TouchableOpacity></View>
+        <Text style={styles.buttonPlusMinus}>--</Text>
+      </TouchableOpacity>
+        
+        
+        <TouchableOpacity
+        style={styles.button} onPressIn={()=> {move('up')}}
+      >
+        <Text style={styles.minus}>↑</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPressIn={()=> {showMyLocation('minus')}}
+        onPressIn={()=> {move('plus')}}
+      >
+        <Text style={styles.plus}>+</Text>
+      </TouchableOpacity>
+      
+    </View>
+
+
+      <View style={styles.group}><TouchableOpacity
+      
+        onPressIn={()=> {move('left')}}
+      >
+        <Text style={[styles.leftRight]}>←</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        // style={styles.button}
+        onPressIn={()=> {move('right')}}
+      >
+        <Text style={[styles.leftRight]}>→</Text>
+      </TouchableOpacity></View>
+      
+
+      <View style={styles.group}>
+
+     
+
+      <TouchableOpacity
+        style={styles.button}
+        onPressIn={()=> {move('down')}}
+      >
+        <Text style={styles.buttonPlusMinus}>↓</Text>
+      </TouchableOpacity>
+      
+      
+      </View>
+
+
+
+       <TouchableOpacity
+        style={styles.button}
+        onPressIn={()=> {showMyLocation()}}
       >
         <Text style={styles.buttonStyle}>Where Am I?</Text>
       </TouchableOpacity>
@@ -290,10 +482,21 @@ const goToTokyo = () => {
 
       <TouchableOpacity
         style={styles.button}
-        onPressIn={()=> {goToData()}}
+        onPressIn={()=> {setaddPrompt(true)}}
       >
-        <Text style={styles.buttonStyle}>Add Place</Text>
+        <Text style={styles.buttonStyle}>Add</Text>
       </TouchableOpacity>
+      
+
+      
+      <Modality places = {places} modalVisible={modalVisible} setModalVisible={setModalVisible} showPlaces={showPlaces}/>
+      
+      {/* <TouchableOpacity
+        style={styles.button}
+        onPressIn={()=> {addPlace()}}
+      >
+        <Text style={styles.buttonStyle}>Places</Text>
+      </TouchableOpacity> */}
 
       {/* <TouchableOpacity
         style={styles.button}
@@ -320,13 +523,15 @@ const styles = StyleSheet.create({
   top: {marginTop: '3%'},
   group: {flexDirection: 'row'},
 
-  upDown: {textAlign: 'center', marginTop: '5%', marginLeft: 'auto', marginRight: 'auto', padding: '2%'},
-  leftRight: {textAlign: 'center', marginLeft: '35%', marginRight: 'auto'},
-
-  buttonStyle: {marginBottom: '5%', marginTop: '5%', marginRight: '3%',color: 'black',textAlign: 'center', fontSize: 24, borderRadius: 12, padding: 6, backgroundColor:'blueviolet', marginTop: 2},
+  upDown: {textAlign: 'center', marginTop: '5%', marginLeft: 'auto', marginRight: 'auto', padding: '1%'},
+  leftRight: {color: 'black', marginLeft:'1%', marginRight: '1%', marginTop: "2%", marginBottom: '2%',fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 6, backgroundColor:'blueviolet'},
+plus: {color: 'black', marginLeft:'1%', marginRight: '1%', fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 6, backgroundColor:'blueviolet'},
+minus: {color: 'black', marginLeft:'1%', marginRight: '1%', fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 6, backgroundColor:'blueviolet'},
+  buttonStyle: {marginBottom: '5%', marginTop: '5%', marginRight: '3%', marginBottom:'1%',  color: 'black',textAlign: 'center', fontSize: 24, borderRadius: 12, padding: 6, backgroundColor:'blueviolet', marginTop: 2},
 
   
-  buttonStyleLarge: {marginBottom: '5%', marginTop: '5%', color: 'black', marginRight: '1%',fontWeight: "800", textAlign: 'center', fontSize: 28, width: 52,borderRadius: 12, padding: 6, backgroundColor:'blueviolet', marginTop: 2}
+  buttonPlusMinus: {marginBottom: '2%', marginTop: '30%', color: 'black', marginRight: '1%',fontWeight: "800", textAlign: 'center', fontSize: 28, width: 52,borderRadius: 12, padding: 6, backgroundColor:'blueviolet', marginTop: 2},
 
-
+showModal: {display:'inherit'},
+hideM:{display:'none3'}
 });
