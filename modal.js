@@ -25,7 +25,7 @@ const Modality = (props) => {
               style={[styles.button, styles.buttonClose]}
               onPress={() => props.setModalVisible(!props.modalVisible)}
             >
-              <Text style={styles.textStyle}>Hide Modal</Text>
+              <Text style={styles.textStyle}>Close</Text>
             </Pressable>
           </View>
         </View>
@@ -34,7 +34,7 @@ const Modality = (props) => {
         style={[styles.button, styles.buttonOpen]}
         onPress={() => props.setModalVisible(true)}
       >
-        <Text style={styles.textStyle}>Show Places</Text>
+        <Text style={styles.textStyle}>Places</Text>
       </Pressable>
     </View>
   );
