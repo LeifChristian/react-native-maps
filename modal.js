@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22
+    marginTop: 25
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: "black",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
@@ -68,17 +68,17 @@ const styles = StyleSheet.create({
     
   },
   buttonOpen: {
-    backgroundColor: "blueviolet",
+    backgroundColor: "black",
     borderRadius: 12
   },
   buttonClose: {
-    backgroundColor: "blueviolet",
+  
     borderRadius: 12
   },
   textStyle: {
-    color: "black",
+    color: "white",
     textAlign: "center",
-    fontSize: 22
+    fontSize: 22,
   },
   modalText: {
     marginBottom: 15,

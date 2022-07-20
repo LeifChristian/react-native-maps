@@ -3,11 +3,14 @@ import {React, useState, useEffect, useRef} from 'react';
 import Geocoder from 'react-native-geocoding';
 import MapView from 'react-native-maps';
 import { Marker } from "react-native-maps";
-import { StyleSheet, Text, View, Button, TouchableOpacity, Appearance, Modal, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Appearance, Modal, Pressable, Alert, Image } from 'react-native';
 import * as Location from 'expo-location';
 import Modality from './modal';
 import Prompt from 'react-native-input-prompt'
 import axios from 'axios';
+import mapstyle from "./mapstyle.json"
+
+console.log(mapstyle.json)
 
 const baseUrl = 'http://54.183.11.135:3800/';
 const locations = [];
@@ -36,6 +39,7 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [addPrompt, setaddPrompt] = useState(false)
+  const [deletePrompt, setDeletePrompt] = useState(true);
   const [inputText, setinputText] = useState('')
 
   let region = {
@@ -184,6 +188,27 @@ const refresh = () => {
 
 }
 
+const confirmDeletePlace = (id, lat, name) => {
+  return Alert.alert(
+    "Sure?",
+    `Confirm delete ${name}`,
+    [
+      // The "Yes" button
+      {
+        text: "Yes",
+        onPress: () => {
+        deletePlace(id, lat, name)
+        },
+      },
+      // The "No" button
+      // Does nothing but dismiss the dialog when tapped
+      {
+        text: "No",
+      },
+    ]
+  ), lat, id, name;
+};
+
 const deletePlace = (id, lat) => {
 
    alert(` Deleted:  ${id} | Lat: ${lat}`)
@@ -212,7 +237,6 @@ const showPlaces = () => {
 
   return places.map((element) => {
 
-    console.log(element, "eleme")
 
     const gotoPlace = (lat, long) => {
         mapRef.current.animateToRegion({latitude: lat, longitude: long, latitudeDelta: 0.01,
@@ -224,21 +248,32 @@ const showPlaces = () => {
 
     return (
 
- <>
+ 
 
- <View>
+ <View key={element.id} >
     <TouchableOpacity onPress ={()=>{gotoPlace(element.lat, element.long, element.name)}}>
-      <Text style={styles.modalItemStyle}>
-        
-     {element?.name} {' '} {element.lat} x {' '}{element.long}
+      <Text style={styles.modalItemStyle} >
+     {element?.name}
 
+      </Text>
+
+      <Text style={styles.modalItemStyle}> {element.lat}{element.long}
+
+      </Text>
+     
+    </TouchableOpacity>
+{}
+    <TouchableOpacity onPress={() => {confirmDeletePlace(element.id, element.lat, element.name)}}>
+      <Text style={{textAlign: 'center', color: "white", fontSize: 23}}>X
+{/*         
+     {element?.name} {' '} {element.lat} x {' '}{element.long} */}
+{"\n"}
     </Text></TouchableOpacity>
     
-    <Button title="delete" onPress={() => {deletePlace(element.id, element.lat)}}></Button>
+    {/* <Button title="delete" onPress={() => {deletePlace(element.id, element.lat)}}></Button> */}
 
     </View>
     
-    </>
 
     );
   });
@@ -332,8 +367,7 @@ const showMyLocation = async () => {
 }
 
 const goToTokyo = () => {
-  //Animate the user to new region. Complete this animation in 3 seconds
-  
+  //Animate the user to new region in 3 seconds
   mapRef.current.animateToRegion(tokyoRegion, 3 * 1000);
 
   setTimeout(function() {setLat(tokyoRegion.latitude)
@@ -350,14 +384,19 @@ const goToTokyo = () => {
        showsUserLocation={true} //showsMyLocationButton
       region={region}><Marker coordinate={region} />{list()}</MapView> 
 
-      <View style={{backgroundColor:'white'}}></View>
+      <View style={{backgroundColor:'black'}}></View>
 
       <Text style={{color: 'white', fontSize: 16, marginTop: '2%'}}>{display}</Text>
 
-      <Prompt
+      <Prompt style={{backgroundColor: 'black'}}
     visible={addPrompt}
-    title="Name your place"
-    placeholder="Type Something"
+    title="Name Your Place"
+    placeholder="..."
+
+    submitText={'save'}
+    cancelText={"cancel"
+    }
+    titleStyle={{color: 'black'}}
     onCancel={() =>
        setaddPrompt(false)
     }
@@ -397,7 +436,8 @@ const goToTokyo = () => {
         <Text style={[styles.leftRight]}>←</Text>
       </TouchableOpacity>
 
-      
+      <Image style={{height: 41, width: 41, marginTop: 14, marginRight: 2, marginLeft: -2, justifyContent: 'center', alignContent:'center', alignItems: 'center'}} source={require("./center.png")}></Image>
+
       <TouchableOpacity
         onPressIn={()=> {move('right')}}>
         <Text style={[styles.leftRight]}>→</Text>
@@ -460,13 +500,16 @@ const styles = StyleSheet.create({
 top: {marginTop: '3%'},
 group: {flexDirection: 'row', marginTop: '2%'},
 
-leftRight: {color: 'black', marginLeft:'2%', marginRight: '2%', marginTop: "2%", marginBottom: '2%',fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 6, backgroundColor:'blueviolet'},
-plus: {color: 'black', marginLeft:'31%', marginRight: '2%', fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 8, backgroundColor:'blueviolet'},
-minus: {color: 'black', marginLeft:'32%', marginRight: '3%', fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 8, backgroundColor:'blueviolet'},
-up: {color: 'black', marginLeft:'1%', marginRight: '1%', fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 6, backgroundColor:'blueviolet'},
-buttonStyle: {marginBottom: '5%', marginTop: '5%', marginRight: '8%', marginBottom:'1%',  color: 'black',textAlign: 'center', fontSize: 24, borderRadius: 12, padding: 6, backgroundColor:'blueviolet', marginTop: 2},
-Down: {marginBottom: '2%', marginTop: '30%', color: 'black', marginRight: '1%',fontWeight: "800", textAlign: 'center', fontSize: 28, width: 52,borderRadius: 12, padding: 6, backgroundColor:'blueviolet', marginTop: 2},
+leftRight: {color: 'white', marginLeft: "2%", marginTop: "2%", marginBottom: '2%',fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 6, backgroundColor:'black'},
+plus: {color: 'white', marginRight: '-.1%', marginLeft: ".41%",
+marginTop: '6%',
+fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 8, backgroundColor:'black'},
+minus: {color: 'white', // marginLeft:'32%', marginRight: '3%', 
+marginTop: '6%', 
+fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 8, backgroundColor:'black'},
+up: {color: 'white', marginLeft:'1%', marginRight: '1%', fontWeight: "900", textAlign: 'center', fontSize: 32, width: 52, borderRadius: 12, padding: 4, backgroundColor:'black'},
+buttonStyle: {marginBottom: '5%', marginTop: '5%', marginRight: '8%', marginBottom:'1%',  color: 'white',textAlign: 'center', fontSize: 24, borderRadius: 12, padding: 6, backgroundColor:'black', marginTop: 2},
+Down: {marginBottom: '2%', marginTop: '30%', color: 'white', marginRight: '1%',fontWeight: "800", textAlign: 'center', fontSize: 28, width: 52,borderRadius: 12, padding: 6, backgroundColor:'black', marginTop: 2},
 
-modalItemStyle: {fontWeight: '800'}
-
+modalItemStyle: { fontSize: 16, textAlign: 'center', color: 'white'}
 });
