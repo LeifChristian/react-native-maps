@@ -69,7 +69,7 @@ export default function App() {
              console.log(location.coords.latitude, location.coords.longitude, 'current location');
              setLocations({lat: location.coords.latitude, long: location.coords.longitude})
              console.log(locations, 'lo')
-             setDisplay(`lat: ${location.coords.latitude}, long: ${location.coords.longitude}`)
+             setDisplay(`lat: ${location.coords.latitude.toFixed(7)}, long: ${location.coords.longitude.toFixed(7)}`)
              setLat(location.coords.latitude);
              setLong(location.coords.longitude)
             });
@@ -254,7 +254,7 @@ const showPlaces = () => {
 
  <View key={element.id} >
     <TouchableOpacity onPress ={()=>{gotoPlace(element.lat, element.long, element.name)}}>
-      <Text style={styles.modalItemStyle} >
+      <Text style={styles.modalHeaderStyle} >
         
      {element?.name}
 
@@ -270,8 +270,20 @@ const showPlaces = () => {
       <Text style={{textAlign: 'center', color: "white", fontSize: 23}}>X
 {/*         
      {element?.name} {' '} {element.lat} x {' '}{element.long} */}
-{"\n"}{"\n"}
+
     </Text></TouchableOpacity>
+
+    
+    <View style={{ flex: 1 }}>
+ <Text></Text>
+      <View
+        style={{
+          borderBottomColor: 'white',
+          borderBottomWidth: 1,
+        }}
+      />
+      <Text>world</Text>
+    </View>
     
     {/* <Button title="delete" onPress={() => {deletePlace(element.id, element.lat)}}></Button> */}
 
@@ -348,7 +360,7 @@ try {
       break;
       case 'down' : setLat(prevState => prevState - (prevState*.01)); setDisplay(`lat: ${lat - (lat*.01)}, long: ${long}`) //alert(lat); //setLatD(prevState => prevState - 1); alert(latD)
       break;
-      case 'left' : setLong(prevState => prevState - (Math.abs(prevState)/100)); setDisplay(`lat: ${lat}, long: ${long - (Math.abs(long)/100)}`) //alert(long); //setLongD(prevState => prevState + 1); alert(longD)
+      case 'left' : setLong(prevState => prevState - (Math.abs(prevState)/100)); setDisplay(`lat: ${lat}, long: ${(long - (Math.abs(long)/100))}`) //alert(long); //setLongD(prevState => prevState + 1); alert(longD)
       break;
       case 'right' : setLong(prevState => prevState + (Math.abs(prevState)/100)); setDisplay(`lat: ${lat}, long: ${long + (Math.abs(long)/100)}`) //alert(long); //setLongD(prevState => prevState - 1); alert(longD)
       break;
@@ -370,7 +382,7 @@ const showMyLocation = async () => {
 
   setLat(location.coords.latitude);
   setLong(location.coords.longitude);
-  setDisplay(`lat: ${location.coords.latitude}, long: ${location.coords.longitude}`)
+  setDisplay(`lat: ${location.coords.latitude.toFixed(7)}, long: ${location.coords.longitude.toFixed(7)}`)
 
 }
 
@@ -404,7 +416,7 @@ setLat(e.nativeEvent.coordinate.latitude);
 setLong(e.nativeEvent.coordinate.longitude)
 setLocation({latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude})
 // setDisplay({lat: e.nativeEvent.coordinate.latitude, long: e.nativeEvent.coordinate.longitude})
-setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coordinate.longitude}`)
+setDisplay(`lat: ${e.nativeEvent.coordinate.latitude.toFixed(7)}, long: ${e.nativeEvent.coordinate.longitude.toFixed(7)}`)
 
 // alert(`lat: ${lat}, long: ${long}`)
 
@@ -457,7 +469,7 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
       <View style={[styles.group, styles.top]}>
         
         <TouchableOpacity
-        style={styles.button} onPressIn={()=> {move('up')}}>
+       onPressIn={()=> {move('up')}}>
         <Text style={styles.up}>↑</Text>
       </TouchableOpacity>
 
@@ -466,7 +478,7 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
       <View style={styles.group}>
 
       <TouchableOpacity
-        style={styles.button}
+      
         onPressIn={()=> {move('minus')}}>
         <Text style={styles.minus}>--</Text>
       </TouchableOpacity>
@@ -490,7 +502,7 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.button}
+    
         onPressIn={()=> {move('plus')}}>
         <Text style={styles.plus}>+</Text>
       </TouchableOpacity>
@@ -500,7 +512,6 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
       
       <View style={styles.group}>
       <TouchableOpacity
-        style={styles.button}
         onPressIn={()=> {move('down')}}
       >
         <Text style={styles.Down}>↓</Text>
@@ -516,7 +527,6 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
         <Text style={styles.buttonStyle}>Tokyo</Text> </TouchableOpacity>  */}
 
       <TouchableOpacity
-        style={styles.button}
         onPressIn={()=> {setaddPrompt(true)}}>
         <Text style={styles.buttonStyle}>Add</Text>
       </TouchableOpacity>
@@ -557,5 +567,7 @@ up: {color: 'white', marginLeft:'1%', marginRight: '1%', fontWeight: "900", text
 buttonStyle: {marginBottom: '5%', marginTop: '5%', marginRight: '8%', marginBottom:'1%',  color: 'white',textAlign: 'center', fontSize: 24, borderRadius: 12, padding: 6, backgroundColor:'black', marginTop: 2},
 Down: {marginBottom: '2%', marginTop: '30%', color: 'white', marginRight: '1%',fontWeight: "800", textAlign: 'center', fontSize: 28, width: 52,borderRadius: 12, padding: 6, backgroundColor:'black', marginTop: 2},
 
-modalItemStyle: { fontSize: 16, textAlign: 'center', color: 'white'}
+modalItemStyle: { fontSize: 16, textAlign: 'center', color: 'white'},
+
+modalHeaderStyle: { fontSize: 20, fontWeight: '600', fontStyle: 'italic', textAlign: 'center', color: 'white',marginBottom: '2%'}
 });
