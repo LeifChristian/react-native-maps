@@ -29,6 +29,7 @@
     "react-native-maps": "0.30.2",
     "react-native-modal": "^13.0.1",
     "react-native-single-prompt": "^2.0.1",
+    "react-native-svg": "12.3.0",
     "react-native-web": "0.17.7",
     "realm": "^10.19.5"
   },

@@ -13,7 +13,7 @@ import mapstyle from "./mapstyle.json"
 console.log(mapstyle.json)
 
 const baseUrl = 'http://54.183.11.135:3800/';
-// const locations = [];
+const locations = [];
 
 export default function App() {
 
@@ -24,7 +24,6 @@ export default function App() {
     longitudeDelta: 0.01,
   };
   
-  const [locations, setLocations] = useState(null)
   const [lat, setLat] = useState(39.97343096953564)
   const [latD, setLatD] = useState(0.0922)
   const [long, setLong] = useState(-75.12520805829233)
@@ -61,13 +60,13 @@ export default function App() {
       let location = await Location.getCurrentPositionAsync({});
       
       setLocation(location);
-      console.log(location, "here");
+      console.log(location, "CATION");
   
       Location.watchPositionAsync({
         enableHighAccuracy:true
             }, location => {
-             console.log(location.coords.latitude, location.coords.longitude, 'current location');
-             setLocations({lat: location.coords.latitude, long: location.coords.longitude})
+             console.log(location.coords.latitude, 'current location');
+             locations.push({lat: location.coords.latitude, long: location.coords.longitude})
              console.log(locations, 'lo')
              setDisplay(`lat: ${location.coords.latitude}, long: ${location.coords.longitude}`)
              setLat(location.coords.latitude);
@@ -96,7 +95,7 @@ export default function App() {
             
               let washedResponse = JSON.parse(JSON.stringify(response.data));
             
-              console.log(washedResponse, 'wash?')
+              console.log(washedResponse)
             
               setPlaces(washedResponse);
             
@@ -109,11 +108,9 @@ export default function App() {
     })();
   }, []);
 
-const addPlace = async (text) => {
+const addPlace = (text) => {
 
   setaddPrompt(true);
-
-  console.log(locations," goddamn Fucking locations")
 
 var data = JSON.stringify({
   "password": "b03ddf3ca2e714a6548e7495e2a03f5e824eaac9837cd7f159c67b90fb4b7342",
@@ -130,7 +127,7 @@ var config = {
   data : data
 };
 
-await axios(config)
+axios(config)
 .then(function (response) {
   console.log(JSON.stringify(response.data));
 
@@ -214,7 +211,7 @@ const confirmDeletePlace = (id, lat, name) => {
 
 const deletePlace = (id, lat) => {
 
-  //  alert(` Deleted:  ${id} | Lat: ${lat}`)
+   alert(` Deleted:  ${id} | Lat: ${lat}`)
 
   setModalVisible(false)
 
@@ -244,18 +241,18 @@ const showPlaces = () => {
     const gotoPlace = (lat, long) => {
         mapRef.current.animateToRegion({latitude: lat, longitude: long, latitudeDelta: 0.01,
         longitudeDelta: 0.01,}, 3 * 1000);
-       setLat(lat); setLong(long);
-   
+       setLat(lat); setLong(long)
         //  setLocation(region)
         // setModalVisible(false)
     }
 
     return (
 
+ 
+
  <View key={element.id} >
     <TouchableOpacity onPress ={()=>{gotoPlace(element.lat, element.long, element.name)}}>
       <Text style={styles.modalItemStyle} >
-        
      {element?.name}
 
       </Text>
@@ -270,7 +267,7 @@ const showPlaces = () => {
       <Text style={{textAlign: 'center', color: "white", fontSize: 23}}>X
 {/*         
      {element?.name} {' '} {element.lat} x {' '}{element.long} */}
-{"\n"}{"\n"}
+{"\n"}
     </Text></TouchableOpacity>
     
     {/* <Button title="delete" onPress={() => {deletePlace(element.id, element.lat)}}></Button> */}
@@ -292,7 +289,7 @@ const list = () => {
         <Marker key={element.id} coordinate={{"latitude": element.lat,
     "latitudeDelta": latD,
     "longitude": element.long,
-    "longitudeDelta": longD}} ></Marker>
+    "longitudeDelta": longD}} />
 
     );
   });
@@ -338,19 +335,21 @@ try {
   console.log(error)
 }
 
+
+
 }
 
  const move = (direction) => {
 
   switch(direction) {
    
-      case 'up' : setLat(prevState => prevState + (prevState*.01)); setDisplay(`lat: ${lat + (lat*.01)}, long: ${long}`)// alert(lat); //setLatD(prevState => prevState + 1); alert(latD)
+      case 'up' : setLat(prevState => prevState + (prevState*.01)); // alert(lat); //setLatD(prevState => prevState + 1); alert(latD)
       break;
-      case 'down' : setLat(prevState => prevState - (prevState*.01)); setDisplay(`lat: ${lat - (lat*.01)}, long: ${long}`) //alert(lat); //setLatD(prevState => prevState - 1); alert(latD)
+      case 'down' : setLat(prevState => prevState - (prevState*.01)); //alert(lat); //setLatD(prevState => prevState - 1); alert(latD)
       break;
-      case 'left' : setLong(prevState => prevState - (Math.abs(prevState)/100)); setDisplay(`lat: ${lat}, long: ${long - (Math.abs(long)/100)}`) //alert(long); //setLongD(prevState => prevState + 1); alert(longD)
+      case 'left' : setLong(prevState => prevState - (Math.abs(prevState)/100)); //alert(long); //setLongD(prevState => prevState + 1); alert(longD)
       break;
-      case 'right' : setLong(prevState => prevState + (Math.abs(prevState)/100)); setDisplay(`lat: ${lat}, long: ${long + (Math.abs(long)/100)}`) //alert(long); //setLongD(prevState => prevState - 1); alert(longD)
+      case 'right' : setLong(prevState => prevState + (Math.abs(prevState)/100)); //alert(long); //setLongD(prevState => prevState - 1); alert(longD)
       break;
       case 'minus' : setLongD(prevState=> prevState + (prevState/4)); console.log(longD)//  setLatD(prevState=> prevState - .01); 
       break;
@@ -362,15 +361,8 @@ try {
 
 const showMyLocation = async () => {
 
-
-  
-  let location = await Location.getCurrentPositionAsync({});
-      
-  setLocation(location);
-
   setLat(location.coords.latitude);
   setLong(location.coords.longitude);
-  setDisplay(`lat: ${location.coords.latitude}, long: ${location.coords.longitude}`)
 
 }
 
@@ -383,49 +375,14 @@ const goToTokyo = () => {
   
 };
 
-const onMapPress = (e) => {
-
-  console.log(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude, "natiVEEE")
-
-  console.log(typeof e.nativeEvent.coordinate.latitude)
-
-  let slimLat = e.nativeEvent.coordinate.latitude.toFixed(7);
-  let slimLong = e.nativeEvent.coordinate.longitude.toFixed(7);
-
-  console.log(slimLat, slimLong, "sleem")
-
-  // console.log(locations[0].lat, locations[0].long, 'lolololo')
-
-   setLocations([]);
-
-   setLocations([{lat: slimLat, long: slimLong}])
-
-setLat(e.nativeEvent.coordinate.latitude);
-setLong(e.nativeEvent.coordinate.longitude)
-setLocation({latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude})
-// setDisplay({lat: e.nativeEvent.coordinate.latitude, long: e.nativeEvent.coordinate.longitude})
-setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coordinate.longitude}`)
-
-// alert(`lat: ${lat}, long: ${long}`)
-
-
-
-}
-
-
   return (
     <View style={styles.container}>
       {/* <Text>Open up App.js to start working on your app!fff</Text>
       <StatusBar style="auto" /> */}
       
       <MapView userInterfaceStyle={'dark'} ref={mapRef} style={{height: '60%', width: '100%'}} 
-        showsUserLocation={true} //showsMyLocationButton
-       onPress = {(e)=> {onMapPress(e)}}
-      region={region}>
-        
-        <Marker coordinate={region} image={require('./pin.png')}></Marker>
-      
-      {list()}</MapView> 
+       showsUserLocation={true} //showsMyLocationButton
+      region={region}><Marker coordinate={region} />{list()}</MapView> 
 
       <View style={{backgroundColor:'black'}}></View>
 
@@ -446,7 +403,7 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
 
     onSubmit={text =>{
       (text.length == 0) ? text='untitled' : '';
-      //  alert(text);
+       alert(text);
        setinputText(text)
       addPlace(text)
       setaddPrompt(false)
@@ -479,11 +436,8 @@ setDisplay(`lat: ${e.nativeEvent.coordinate.latitude}, long: ${e.nativeEvent.coo
         <Text style={[styles.leftRight]}>←</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={showMyLocation}>
-        <Image style={{height: 41, width: 41, marginTop: 14, marginRight: 2, marginLeft: -2, justifyContent: 'center', alignContent:'center', alignItems: 'center'}} source={require("./center.png")}></Image>
-</TouchableOpacity>
+      <Image style={{height: 41, width: 41, marginTop: 14, marginRight: 2, marginLeft: -2, justifyContent: 'center', alignContent:'center', alignItems: 'center'}} source={require("./center.png")}></Image>
 
-      
       <TouchableOpacity
         onPressIn={()=> {move('right')}}>
         <Text style={[styles.leftRight]}>→</Text>
