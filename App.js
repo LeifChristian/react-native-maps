@@ -372,16 +372,16 @@ export default function App() {
   const move = (direction) => {
     switch (direction) {
       case "up":
-        setLat((prevState) => prevState + prevState * 0.01);
+        setLat((prevState) => prevState + (latD/10));
         setDisplay(
-          `lat: ${(lat + lat * 0.01).toFixed(7)}, long: ${long.toFixed(7)}`
+          `lat: ${(lat + (latD/10)).toFixed(7)}, long: ${long.toFixed(7)}`
         );
         setLocations([{ lat: lat, long: long }]); // alert(lat); //setLatD(prevState => prevState + 1); alert(latD)
         break;
       case "down":
-        setLat((prevState) => prevState - prevState * 0.01);
+        setLat((prevState) => prevState -  (latD/10));
         setDisplay(
-          `lat: ${(lat - lat * 0.01).toFixed(7)}, long: ${long.toFixed(7)}`
+          `lat: ${(lat - (latD/10)).toFixed(7)}, long: ${long.toFixed(7)}`
         );
         setLocations([{ lat: lat, long: long }]); //alert(lat); //setLatD(prevState => prevState - 1); alert(latD)
         break;
