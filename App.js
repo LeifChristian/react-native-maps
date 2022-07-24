@@ -280,14 +280,13 @@ export default function App() {
       };
 
       return (
-        <View key={element.id}>
-           <ScrollView style={styles.scrollView}>
+        <View key={element.id} >
           <TouchableOpacity
             onPress={() => {
               gotoPlace(element.lat, element.long, element.name);
             }}
           >
-            <Text style={styles.modalHeaderStyle}>{element?.name}</Text>
+            <Text style={styles.modalHeaderStyle}>{element.name}</Text>
 
             <Text style={styles.modalItemStyle}>
               {" "}
@@ -295,8 +294,6 @@ export default function App() {
               {element.long.toFixed(7)}
             </Text>
           </TouchableOpacity>
-          </ScrollView>
-          {}
           <TouchableOpacity
             onPress={() => {
               confirmDeletePlace(element.id, element.lat, element.name);
@@ -506,7 +503,7 @@ export default function App() {
         onPress={(e) => {
           onMapPress(e);
         }}
-        onLongPress={(e)=> {onLongPress(e)}}
+       onLongPress={(e)=> {onLongPress(e)}}
         region={region}
       >
         <Marker coordinate={region} image={require("./pin.png")}></Marker>

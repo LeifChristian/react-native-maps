@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
+import { Alert, Modal, StyleSheet, Text, Pressable, View, ScrollView } from "react-native";
 
 const Modality = (props) => {
 
 // const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <View>
-      <Modal
+    <View >
+      <Modal propagateSwipe={true}
         animationType="slide"
         transparent={true}
         visible={props.modalVisible}
@@ -18,9 +18,10 @@ const Modality = (props) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <ScrollView>
             <Text style={styles.modalText}>{
             props.showPlaces()
-            }</Text>
+            }</Text></ScrollView>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => props.setModalVisible(!props.modalVisible)}

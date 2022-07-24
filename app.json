@@ -2,9 +2,9 @@
   "expo": {
 
     "name": "My Places",
-    "slug": "pd-test",
+    "slug": "my-places",
     "version": "1.0.0",
-
+    "orientation": "portrait",
     "icon": "download.png",
     "assetBundlePatterns": [
       "**/*"
