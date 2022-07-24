@@ -276,14 +276,14 @@ export default function App() {
         setLong(long);
 
         //  setLocation(region)
-        // setModalVisible(false)
+        // 
       };
 
       return (
         <View key={element.id} >
           <TouchableOpacity
             onPress={() => {
-              gotoPlace(element.lat, element.long, element.name);
+              gotoPlace(element.lat, element.long, element.name); setModalVisible(false)
             }}
           >
             <Text style={styles.modalHeaderStyle}>{element.name}</Text>
